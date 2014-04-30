@@ -6,6 +6,8 @@ use Mouse::Util::TypeConstraints;
 
 subtype 'Lingua::TFIDF::TermFrequency', as 'HashRef[Str]';
 
+duck_type 'Lingua::TFIDF::WordCounter' => [qw/add_count clear frequencies/];
+
 duck_type 'Lingua::TFIDF::WordSegmenter' => [qw/segment/];
 
 no Mouse::Util::TypeConstraints;

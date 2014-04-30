@@ -14,9 +14,18 @@ our $VERSION = 0.01;
 sub new {
   args
     my $class => 'ClassName',
+    my $word_counter => +{ isa => 'Lingua::TFIDF::WordCounter', optional => 1 },
     my $word_segmenter => 'Lingua::TFIDF::WordSegmenter';
 
-  bless +{ word_segmenter => $word_segmenter } => $class;
+  unless (defined $word_counter) {
+    require Lingua::TFIDF::WordCounter::Simple;
+    $word_counter = Lingua::TFIDF::WordCounter::Simple->new;
+  }
+
+  bless +{
+    word_counter => $word_counter,
+    word_segmenter => $word_segmenter,
+  } => $class;
 }
 
 sub idf {
@@ -42,14 +51,17 @@ sub tf {
     my $document => 'Ref | Str',
     my $normalize => +{ isa => 'Bool', default => 0 };
 
+  $self->word_counter->clear;
+
   my $iter = $self->word_segmenter->segment($document);
-  my %tf;
-  while (defined (my $word = $iter->())) { ++$tf{$word} }
+  my $counter = $self->word_counter;
+  while (defined (my $word = $iter->())) { $counter->add_count($word) }
 
-  return \%tf unless $normalize;
+  my $tf = $counter->frequencies;
+  return $tf unless $normalize;
 
-  my $total_words = sum values %tf;
-  +{ map { ($_ => $tf{$_} / $total_words) } keys %tf };
+  my $total_words = sum values %$tf;
+  +{ map { ($_ => $tf->{$_} / $total_words) } keys %$tf };
 }
 
 sub tf_idf {
@@ -69,6 +81,8 @@ sub tf_idf {
   }
   return \@tf_idf;
 }
+
+sub word_counter { $_[0]->{word_counter} }
 
 sub word_segmenter { $_[0]->{word_segmenter} }
 
