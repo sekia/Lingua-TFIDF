@@ -90,32 +90,29 @@ sub word_segmenter { $_[0]->{word_segmenter} }
 
 =head1 SYNOPSIS
 
-  use utf8;
   use Lingua::TFIDF;
-  use Lingua::TFIDF::WordSegmenter::JA::MeCab;
+  use Lingua::TFIDF::WordSegmenter::SplitBySpace;
   
   my $tf_idf_calc = Lingua::TFIDF->new(
     # Use a word segmenter for japanese text.
-    word_segmenter => Lingua::TFIDF::WordSegmenter::JA::MeCab->new,
+    word_segmenter => Lingua::TFIDF::WordSegmenter::SplitBySpace->new,
   );
   
-  # "Humpty Dumpty" in japanese.
-  my $document1 = 'ハンプティ・ダンプティ　塀の上...';
-  # "London Bridge"
-  my $document2 = 'ロンドン橋落ちた　落ちた　落ちた...';
+  my $document1 = 'Humpty Dumpty sat on a wall...';
+  my $document2 = 'Remember, remember, the fifth of November...';
   
   my $tf = $tf_idf_calc->tf(document => $document1);
-  # TF of word "Humpty Dumpty" in $document1.
-  say $tf->{'ハンプティ・ダンプティ'};  # 2, if you are referring same text as mine.
+  # TF of word "Dumpty" in $document1.
+  say $tf->{'Dumpty'};  # 2, if you are referring same text as mine.
   
   my $idf = $tf_idf_calc->idf(documents => [$document1, $document2]);
-  say $idf->{'ハンプティ・ダンプティ'};  # log(2/1) ≒ 0.693147
+  say $idf->{'Dumpty'};  # log(2/1) ≒ 0.693147
   
   my $tf_idfs = $tf_idf_calc->tf_idf(documents => [$document1, $document2]);
-  # TF-IDF of word "Humpty Dumpty" in $document1.
-  say $tf_idfs->[0]{'ハンプティ・ダンプティ'};  # 2 log(2/1) ≒ 1.386294
+  # TF-IDF of word "Dumpty" in $document1.
+  say $tf_idfs->[0]{'Dumpty'};  # 2 log(2/1) ≒ 1.386294
   # Ditto. But in $document2.
-  say $tf_idfs->[1]{'ハンプティ・ダンプティ'};  # 0
+  say $tf_idfs->[1]{'Dumpty'};  # 0
 
 =head1 DESCRIPTION
 
@@ -129,7 +126,7 @@ This module provides feature for calculating TF, IDF and TF-IDF.
 
 There are several TF-IDF calculator modules in CPAN already, for example L<Text::TFIDF> and L<Lingua::JA::TFIDF>. So why I reinvent the wheel? The reason is language dependency: C<Text::TFIDF> assumes that words in sentence are separated by spaces. This assumption is not true in most east asian languages. And C<Lingua::JA::TFIDF> works only on japanese text.
 
-C<Lingua::TFIDF> solves this problem by separating word segmentation process from calculation. You can process documents written in any languages, by providing appropriate word segmentor object (see L</CUSTOM WORD SEGMENTER> below.)
+C<Lingua::TFIDF> solves this problem by separating word segmentation process from word frequency counting. You can process documents written in any languages, by providing appropriate word segmenter (see L</CUSTOM WORD SEGMENTER> below.)
 
 =head1 METHODS
 
@@ -139,9 +136,9 @@ Constructor. Takes 1 mandatory parameter C<word_segmenter>.
 
 =head3 CUSTOM WORD SEGMENTER
 
-Although this distribution bundles a language-independent word segmenter, L<Lingua::TFIDF::WordSegmenter::LetterNgram>, sometimes language-specifiec word segmenters are more appropriate. You can pass a custom word segmenter object to the calculator.
+Although this distribution bundles some language-independent word segmenter, like L<Lingua::TFIDF::WordSegmenter::SplitBySpace>, sometimes language-specifiec word segmenters are more appropriate. You can pass a custom word segmenter object to the calculator.
 
-The word segmentor is a plain Perl object that implements C<segment> method. The method takes 1 positional argument C<$document>, which is a string or a B<reference> to string. It is expected to return an word iterator as CodeRef.
+The word segmenter is a plain Perl object that implements C<segment> method. The method takes 1 positional argument C<$document>, which is a string or a B<reference> to string. It is expected to return an word iterator as CodeRef.
 
 Roughly speaking, given custom word segmenter will be used like:
 
@@ -174,6 +171,8 @@ Calculates TF-IDFs. Result is returned as ArrayRef of HashRef. Each HashRef cont
 =over 2
 
 =item L<Lingua::TFIDF::WordSegmenter::LetterNgram>
+
+=item L<Lingua::TFIDF::WordSegmenter::SplitBySpace>
 
 =item L<Lingua::TFIDF::WordSegmenter::JA::MeCab>
 

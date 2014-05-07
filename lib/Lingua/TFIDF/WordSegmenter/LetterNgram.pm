@@ -1,5 +1,7 @@
 package Lingua::TFIDF::WordSegmenter::LetterNgram;
 
+# ABSTRACT: Letter N-gram segmenter
+
 use strict;
 use warnings;
 use Carp qw//;
@@ -41,3 +43,27 @@ sub segment {
 }
 
 1;
+
+=head1 SYNOPSIS
+
+  use Lingua::TFIDF::WordSegmenter::LetterNgram;
+  
+  my $segmenter = Lingua::TFIDF::WordSegmenter::LetterNgram->new(n => 2);
+  my $iter = $segmenter->segment('ロンドン橋落ちた　落ちた　落ちた...');
+  while (defined(my $word = $iter->())) { ... }
+
+=head1 DESCRIPTION
+
+This class provides a N-gram word segmenter.
+
+=head1 METHODS
+
+=head2 new(n => $n)
+
+Constructor.
+
+=head2 segment($document | \$document)
+
+Executes word segmentation on given C<$document> and returns an word iterator.
+
+=cut
