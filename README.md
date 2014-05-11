@@ -20,19 +20,19 @@ Example
 use strict;
 use warnings;
 use Lingua::TFIDF;
-use Lingua::TFIDF::WordSegmenter::JA::MeCab;
+use Lingua::TFIDF::WordSegmenter::SplitBySpace;
 
 my $tf_idf_calc = Lingua::TFIDF->new(
-  word_segmenter => Lingua::TFIDF::WordSegmenter::JA::MeCab->new,
+  word_segmenter => Lingua::TFIDF::WordSegmenter::SplitBySpace->new,
 );
 
 my @documents = (<<'EOD1', <<'EOD2');
-ハンプティ・ダンプティ　塀の上
-ハンプティ・ダンプティ　落っこちた
+Humpty Dumpty sat on a wall,
+Humpty Dampty had a great fall.
 ...
 EOD1
-思い出せ　思い出せ　11月5日を
-火薬陰謀事件と反逆を
+Remember, remember, the fifth of November,
+The Gunpowder Treason and plot.
 ...
 EOD2
 
