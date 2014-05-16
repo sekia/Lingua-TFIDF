@@ -94,7 +94,6 @@ sub word_segmenter { $_[0]->{word_segmenter} }
   use Lingua::TFIDF::WordSegmenter::SplitBySpace;
   
   my $tf_idf_calc = Lingua::TFIDF->new(
-    # Use a word segmenter for japanese text.
     word_segmenter => Lingua::TFIDF::WordSegmenter::SplitBySpace->new,
   );
   
